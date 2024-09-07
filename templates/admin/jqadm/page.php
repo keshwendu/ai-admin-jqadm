@@ -129,126 +129,7 @@ $after = is_array( $after ) ? $after['_'] ?? reset( $after ) : $after;
 	data-url="<?= $enc->attr( $this->link( 'admin/jsonadm/url/options', array( 'site' => $site ) ) ) ?>"
 	data-user-siteid="<?= $enc->attr( $this->get( 'pageUserSiteid' ) ) ?>">
 
-	<nav class="main-sidebar">
-		<div class="sidebar-wrapper">
 
-			<a class="logo" target="_blank" href="https://aimeos.org/update/?type=<?= $this->get( 'aimeosType' ) ?>&version=<?= $this->get( 'aimeosVersion' ) ?>">
-				<img src="https://aimeos.org/check/?type=<?= $this->get( 'aimeosType' ) ?>&version=<?= $this->get( 'aimeosVersion' ) ?>&extensions=<?= $this->get( 'aimeosExtensions' ) ?>" alt="Aimeos update" title="Aimeos update">
-			</a>
-
-			<ul class="sidebar-menu">
-
-				<?php if( $this->access( $this->config( 'admin/jqadm/resource/site/groups', [] ) ) ) : ?>
-
-					<li class="none"></li>
-					<li class="treeview menuitem-site <?= $before === null ? 'before' : '' ?>">
-						<a class="item-group" href="#">
-							<i class="icon"></i>
-							<span class="title"><?= $enc->html( $this->site()->label() ) ?></span>
-						</a>
-						<div class="tree-menu-wrapper">
-							<div class="menu-header">
-								<a href="#"><?= $enc->html( $this->translate( 'admin', 'Site' ) ) ?></a>
-								<span class="close"></span>
-							</div>
-							<div class="menu-body vue" data-key="sidebar-sites">
-								<site-tree
-									v-bind:promise="Aimeos.options"
-									current="<?= $enc->attr( $this->pageSiteItem->getId() ) ?>"
-									parent="<?= $enc->attr( $this->pageSitePath->getParentId()->first( '0' ) ) ?>"
-									placeholder="<?= $enc->attr( $this->translate( 'admin', 'Find site' ) ) ?>"
-									url="<?= $enc->attr( $this->link( 'admin/jqadm/url/search', ['site' => '_code_'] + $params ) ) ?>">
-								</site-tree>
-							</div>
-						</div>
-					</li>
-
-				<?php else : ?>
-
-					<li class="none <?= $before === null ? 'before' : '' ?>"></li>
-
-				<?php endif ?>
-
-				<?php foreach( $navlist as $nav => $navitem ) : ?>
-					<?php if( is_array( $navitem ) ) : $nav = $navitem['_'] ?? current( $nav ) ?>
-
-						<li class="treeview menuitem-<?= $enc->attr( $nav ) ?> <?= $nav === $before ? 'before' : '' ?> <?= in_array( $resource, $navitem ) !== false ? 'active' : '' ?> <?= $nav === $after ? 'after' : '' ?>">
-							<span class="item-group">
-								<i class="icon"></i>
-								<span class="title"><?= $enc->attr( $this->translate( 'admin', $nav ) ) ?></span>
-							</span>
-							<div class="tree-menu-wrapper">
-								<div class="menu-header">
-									<a href="#"><?= $enc->html( $this->translate( 'admin', $nav ) ) ?></a>
-									<span class="close"></span>
-								</div>
-								<ul class="tree-menu">
-
-								<?php foreach( map( $navitem )->remove( '_' )->ksort() as $subresource ) : ?>
-										<?php if( $this->access( $this->config( 'admin/jqadm/resource/' . $subresource . '/groups', [] ) ) ) : ?>
-											<?php $key = $this->config( 'admin/jqadm/resource/' . $subresource . '/key', '' ) ?>
-
-											<li class="menuitem-<?= str_replace( '/', '-', $subresource ) ?> <?= $subresource === $resource ? 'active' : '' ?>">
-												<a class="item-group" href="<?= $enc->attr( $this->link( 'admin/jqadm/url/search', ['resource' => $subresource] + $params ) ) ?>"
-													title="<?= $enc->attr( sprintf( $this->translate( 'admin', '%1$s (Ctrl+Alt+%2$s)' ), $this->translate( 'admin', $subresource ), $key ) ) ?>"
-													data-ctrlkey="<?= $enc->attr( strtolower( $key ) ) ?>">
-													<i class="icon"></i>
-													<span class="name"><?= $enc->html( $this->translate( 'admin', $subresource ) ) ?></span>
-												</a>
-											</li>
-
-										<?php endif ?>
-									<?php endforeach ?>
-								</ul>
-							</div>
-						</li>
-
-					<?php else : ?>
-						<?php $key = $this->config( 'admin/jqadm/resource/' . $navitem . '/key' ) ?>
-
-						<li class="menuitem-<?= $enc->attr( $navitem ) ?> <?= $navitem === $before ? 'before' : '' ?> <?= !strncmp( $resource, $navitem, strlen( $navitem ) ) ? 'active' : '' ?> <?= $navitem === $after ? 'after' : '' ?>">
-							<a class="item-group" href="<?= $enc->attr( $this->link( 'admin/jqadm/url/search', ['resource' => $navitem] + $params ) ) ?>"
-								title="<?= $enc->attr( sprintf( $this->translate( 'admin', '%1$s (Ctrl+Alt+%2$s)' ), $this->translate( 'admin', $navitem ), $key ) ) ?>"
-								data-ctrlkey="<?= $enc->attr( strtolower( $key ) ) ?>">
-								<i class="icon"></i>
-								<span class="title"><?= $enc->html( $this->translate( 'admin', $navitem ) ) ?></span>
-							</a>
-						</li>
-
-					<?php endif ?>
-				<?php endforeach ?>
-
-				<?php if( $this->access( $this->config( 'admin/jqadm/resource/language/groups', [] ) ) ) : ?>
-
-					<li class="treeview menuitem-language <?= $after === null ? 'after' : '' ?>">
-						<span class="item-group">
-							<i class="icon"></i>
-							<span class="title"><?= $enc->attr( $this->translate( 'language', $this->param( 'locale', $this->translate( 'admin', 'Language' ) ) ) ) ?></span>
-						</span>
-						<div class="tree-menu-wrapper">
-							<div class="menu-header">
-								<a href="#"><?= $enc->html( $this->translate( 'admin', 'Language' ) ) ?></a>
-								<span class="close"></span>
-							</div>
-							<ul class="tree-menu">
-								<?php foreach( $this->get( 'pageI18nList', [] ) as $langid ) : ?>
-									<li class="menuitem-language-<?= $enc->attr( $langid ) ?>">
-										<a href="<?= $enc->attr( $this->link( 'admin/jqadm/url/search', ['locale' => $langid] + $params ) ) ?>">
-											<span class="name"><?= $enc->html( $this->translate( 'language', $langid ) ) ?> (<?= $langid ?>)</span>
-										</a>
-									</li>
-								<?php endforeach ?>
-							</ul>
-						</div>
-					</li>
-
-				<?php endif ?>
-
-				<li class="none"></li>
-			</ul>
-
-		</div>
-	</nav>
 
 	<main class="main-content">
 		<?= $this->partial( $this->config( 'admin/jqadm/partial/info', 'info' ), [
@@ -259,11 +140,6 @@ $after = is_array( $after ) ? $after['_'] ?? reset( $after ) : $after;
 		<?= $this->block()->get( 'jqadm_content' ) ?>
 	</main>
 
-	<footer class="main-footer">
-		<a href="https://github.com/aimeos/ai-admin-jqadm/issues" target="_blank">
-			<?= $enc->html( $this->translate( 'admin', 'Bug or suggestion?' ) ) ?>
-		</a>
-	</footer>
 
 	<?= $this->partial( $this->config( 'admin/jqadm/partial/confirm', 'confirm' ) ) ?>
 	<?= $this->partial( $this->config( 'admin/jqadm/partial/problem', 'problem' ) ) ?>
